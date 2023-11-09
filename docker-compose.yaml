@@ -55,8 +55,8 @@ services:
     links:
       - "pdns-int"
     ports:
-      - "5302:53"
-      - "5302:53/udp"
+      - "5303:53"
+      - "5303:53/udp"
     environment:
       - PDNS_api_key=Tmaltmfhdn
       - PDNS_allow_from=0.0.0.0/0
