@@ -159,6 +159,24 @@ services:
       pdns:
         ipv4_address: 192.168.255.252
 
+  dnsdist:
+    image: powerdns/dnsdist-master:latest
+    hostname: pdns-dnsdist
+    restart: always
+    depends_on:
+      - pdns-recursor-int
+      - pdns-ext
+    links:
+      - "pdns-recursor-int"
+      - "pdns-ext"
+    ports:
+      - "5399:53"
+      - "5399:53/udp"
+    networks:
+      pdns:
+        ipv4_address: 192.168.255.100
+    volumes:
+      - ./dnsdist/dnsdist.conf:/etc/dnsdist/dnsdist.conf
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
