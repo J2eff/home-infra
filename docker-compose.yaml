@@ -89,10 +89,6 @@ services:
       - GUNICORN_LOGLEVEL=DEBUG
     networks:
       pdns:
-        aliases:
-          - pdns-admin-int
-    networks:
-      pdns:
         ipv4_address: 192.168.255.251
 
   pdns-ext:
@@ -147,10 +143,6 @@ services:
       - GUNICORN_TIMEOUT=60
       - GUNICORN_WORKERS=2
       - GUNICORN_LOGLEVEL=DEBUG
-    networks:
-      pdns:
-        aliases:
-          - pdns-admin-ext
     networks:
       pdns:
         ipv4_address: 192.168.255.251
