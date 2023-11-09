@@ -145,7 +145,7 @@ services:
       - GUNICORN_LOGLEVEL=DEBUG
     networks:
       pdns:
-        ipv4_address: 192.168.255.251
+        ipv4_address: 192.168.255.252
 
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
