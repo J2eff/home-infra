@@ -89,6 +89,10 @@ services:
       - GUNICORN_TIMEOUT=60
       - GUNICORN_WORKERS=2
       - GUNICORN_LOGLEVEL=DEBUG
+      - PDNS_PROTO=http
+      - PDNS_PORT=8081
+      - PDNS_HOST=192.168.255.153
+      - PDNS_API_KEY=Tmaltmfhdn
     networks:
       pdns:
         ipv4_address: 192.168.255.251
@@ -147,6 +151,10 @@ services:
       - GUNICORN_TIMEOUT=60
       - GUNICORN_WORKERS=2
       - GUNICORN_LOGLEVEL=DEBUG
+      - PDNS_PROTO=http
+      - PDNS_PORT=8081
+      - PDNS_HOST=192.168.255.253
+      - PDNS_API_KEY=Tmaltmfhdn
     networks:
       pdns:
         ipv4_address: 192.168.255.252
