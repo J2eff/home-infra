@@ -1,0 +1,102 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=Tmaltmfhdn
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./init.d/:/docker-entrypoint-initdb.d/
+    networks:
+      pdns:
+        ipv4_address: 192.168.255.2  
+  pdns:
+    #build: pdns
+    image: pschiffe/pdns-mysql
+    hostname: pdns
+    restart: always
+    depends_on:
+      - db
+    links:
+      - "db"
+    ports:
+      - "8081:8081"
+    environment:
+      - PDNS_gmysql_host=192.168.255.2
+      - PDNS_gmysql_port=3306
+      - PDNS_gmysql_user=pdns
+      - PDNS_gmysql_dbname=powerdns
+      - PDNS_gmysql_password=Tmaltmfhdn
+      - PDNS_master=yes
+      - PDNS_api=yes
+      - PDNS_api_key=Tmaltmfhdn
+      - PDNSCONF_API_KEY=Tmaltmfhdn
+      - PDNS_local_address=0.0.0.0
+      - PDNS_webserver=yes
+      - PDNS_webserver-allow-from=0.0.0.0/0
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_password=Tmaltmfhdn
+      - PDNS_version_string=anonymous
+      - PDNS_default_ttl=60
+    networks:
+      pdns:
+        ipv4_address: 192.168.255.53
+
+  pdns-recursor:
+    image:   pschiffe/pdns-recursor
+    hostname: pdns-recursor
+    links:
+      - pdns    
+    environment:
+      - PDNS_api_key=Tmaltmfhdn
+      - PDNS_allow_from=0.0.0.0/0
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_password=Tmaltmfh
+      - PDNS_forward_zones=jeff-we.dev=10.254.100.1,j2eff.io=10.254.100.1
+      - PDNS_max_cache_ttl=60
+    ports:
+      - "53:53"
+      - "53:53/UDP"
+    networks:
+      pdns:
+        ipv4_address: 192.168.255.153
+
+  web_app:
+    image: powerdnsadmin/pda-legacy:latest
+    container_name: powerdns-admin
+    depends_on:
+      - db
+    ports:
+      - "8001:80"        
+    restart: always
+    links:
+      - db
+      - pdns
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql://pdns:Tmaltmfhdn@192.168.255.2/powerdnsadmin
+      - GUNICORN_TIMEOUT=60
+      - GUNICORN_WORKERS=2
+      - GUNICORN_LOGLEVEL=DEBUG
+      - PDNS_PROTO=http
+      - PDNS_PORT=8081
+      - PDNS_HOST=192.168.255.53
+      - PDNS_API_KEY=Tmaltmfhdn
+    networks:
+      pdns:
+        ipv4_address: 192.168.255.80
+
+networks:
+  pdns:
+    ipam:
+      config:
+        - subnet: 192.168.255.0/24
+          gateway: 192.168.255.1
+
